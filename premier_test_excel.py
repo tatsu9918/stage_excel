@@ -20,9 +20,11 @@ all_devis=[]
 for i in range(ligne_data): 
     if type(da[colone[4]+str(i+1)].value)==int:
         all_devis.append(da[colone[4]+str(i+1)].value)
+
+                                                            ################################ données devis ################################
 Date_Devis = (ex[colone[0]+str(ligne_ex)].value)
 bu_key=f"=IFERROR(INDEX(Tabelle2[BU],MATCH(tbl_DCFC[[#This Row],[Categorie]],CAT,0)),\"\")"
-cw=f"=IF({'A' + str(ligne_data)}<>\"\",\"S\"&TEXT(WEEKNUM({'A' + str(ligne_data)},21),\"00\"),\"\")"
+cw=f"=IF({'D' + str(ligne_data)}<>\"\",\"S\"&TEXT(WEEKNUM({'D' + str(ligne_data)},21),\"00\"),\"\")"
 N_Devis = (ex[colone[1]+str(ligne_ex)].value)
 Client=(ex[colone[2]+str(ligne_ex)].value)
 ASM= (ex[colone[3]+str(ligne_ex)].value)
@@ -30,14 +32,23 @@ Montant= int(ex[colone[4]+str(ligne_ex)].value)
 Date=Date_Devis
 Status=""
 if (ex[colone[5]+str(ligne_ex)].data_type)=="s":
-    Status='Validé'
+    Status='Accepté'
 if Montant==0:
     Status='Opportunité'
 indice_devis=all_devis.count(N_Devis)
 index=colone[indice_devis]
 Client_end=""
 Catégorie=""
-données=[Date,bu_key,cw,Date_Devis,N_Devis,index, Client,Client_end,Montant,ASM,Catégorie,Status]
+                                                            ################################ Split ################################
+split=""
+                                                            ################################ données commande ################################
+cw_order=f"=IF({'Q' + str(ligne_data)}<>\"\",\"S\"&TEXT(WEEKNUM({'Q' + str(ligne_data)},21),\"00\"),\"\")"
+date_comande=(ex[colone[5]+str(ligne_ex)].value)
+n_commande=(ex[colone[6]+str(ligne_ex)].value)
+montant_commande=(ex[colone[7]+str(ligne_ex)].value)
+données_devis=[Date,bu_key,cw,Date_Devis,N_Devis,index, Client,Client_end,Montant,ASM,Catégorie,Status]
+données_commande=[split,cw_order,date_comande,n_commande,montant_commande]
+données=données_devis+données_commande
 for i in range(len(données)):
     da[colone[i]+str(ligne_data)]=données[i]
 data.save('HYFR_DC-FC_2022 JZ.xlsx')
