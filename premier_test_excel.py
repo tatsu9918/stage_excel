@@ -32,13 +32,11 @@ for i in range(2, ligne_ex+1):
     for ind in range(ligne_data):
         if type(da[colone[4]+str(ind+1)].value) == int:
             all_index.append(da[colone[4]+str(ind+1)].value)
-    devis = 0
-    for devis in range(3, (ligne_data-1)):
-        tmp_devis = ((dt.datetime.strftime((da[colone[3]+str(devis)].value), "%d/%m/%Y")), (da[colone[4] + str(devis+1)].value), (da[colone[6] + str(devis+1)].value), (da[colone[8] + str(devis+1)].value),
-                     (da[colone[9]+str(devis+1)].value), (da[colone[11] + str(devis+1)].value), (da[colone[17]+str(devis+1)].value), ((da[colone[18] + str(devis+1)].value)),
-                     (da[colone[26]+str(devis+1)].value))
+    for devis in range(3, (ligne_data)):
+        tmp_devis = (dt.datetime.strftime((da[colone[3]+str(devis)].value),"%d/%m/%Y"), (da[colone[4] + str(devis)].value), (da[colone[6] + str(devis)].value), (da[colone[8] + str(devis)].value),
+                     (da[colone[9]+str(devis)].value), (da[colone[11] + str(devis)].value), (da[colone[17]+str(devis)].value), ((da[colone[18] + str(devis)].value)),
+                     (da[colone[26]+str(devis)].value))
         all_devis.append(tmp_devis)
-
     date_devis = dt.datetime.strptime((ex[colone[0]+str(i)].value), "%d/%m/%Y")
     bu_key = f"=IFERROR(INDEX(Tabelle2[BU],MATCH(tbl_DCFC[[#This Row],[Categorie]],CAT,0)),\"\")"
     cw = f"=IF({'D' + str(ligne_data)}<>\"\",\"S\"&TEXT(WEEKNUM({'D' + str(ligne_data)},21),\"00\"),\"\")"
@@ -100,7 +98,7 @@ for i in range(2, ligne_ex+1):
             ligne_fac += 1
         num_fac = {}
         i = 8
-        for i in range(i, ligne_fac):  # récup des num de facture pour les clés et des facture
+        for i in range(i, ligne_fac):  # récup des num de facture pour les clés et les dates,montants et cliens
             num_fac[fa[colone[0]+str(i)].value] = (fa[colone[1]+str(i)].value, dt.datetime.strftime(
                 (fa[colone[4]+str(i)].value), "%d/%m/%Y"), fa[colone[11]+str(i)].value,)
             i += 1
@@ -128,11 +126,10 @@ for i in range(2, ligne_ex+1):
     if verif_devis not in all_devis:
         print(verif_devis)
         print(all_devis[len(all_devis)-1])
-        print(all_devis)
+        # print("\n\n\n",all_devis)
         for i in range(len(données)):
             da[colone[i]+str(ligne_data)] = données[i]
-        data.save('HYFR_DC-FC_2022 JZ.xlsx')
-        break
         ligne_data += 1
     else:
         print("les données sont identiques")
+data.save('HYFR_DC-FC_2022 JZ.xlsx')
