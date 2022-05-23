@@ -128,7 +128,7 @@ for i in range(2, ligne_ex):
     ################################ insersion excel ################################
     if verif_devis not in all_devis:
         for i in range(len(all_devis)) :
-            if verif_devis[:5]==all_devis[i][:5] and (all_devis[i][8]==None or all_devis[i][6]==None):
+            if verif_devis[:4]==all_devis[i][:4] and (all_devis[i][8]==None or all_devis[i][6]==None):
                 da.delete_rows(i+3)
                 données[5]=colone[indice_devis-1]
                 ligne_data-=1 
