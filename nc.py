@@ -3,73 +3,81 @@ from openpyxl.utils import*
 import datetime as dt
 colone = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA",
           "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ"]
-
 nom=input("FNC?\n")
-export = load_workbook(nom+'.xlsx', data_only=True)
+feuille = load_workbook(nom+'.xlsx', data_only=True)
 monitoring = load_workbook('FR 1005-Monitoring NC & Action Plan-V001.xlsx')
 checklist = load_workbook('checklist.xlsm', keep_vba=True)
 mo=monitoring["Suivi_FNC"]
-ex = export["Fiche de Non-Conformité"]
+su=monitoring["Plan_Actions"]
+nc = feuille["Fiche de Non-Conformité"]
 ch=checklist["INT_DATA"]
-ch_ligne=1
-mo_ligne=1
+ch_ligne=mo_ligne=su_ligne=1
 all_fnc=[]
 while ch[colone[1]+str(ch_ligne)].data_type == "s":
     ch_ligne += 1
 while mo[colone[0]+str(mo_ligne)].data_type == "s":
     mo_ligne += 1
-
+while su[colone[0]+str(su_ligne)].data_type == "s":
+    su_ligne += 1
 for i in range(3,mo_ligne):
     all_fnc.append(mo[colone[0]+str(i)].value)
-print(all_fnc)
 données=[]
-données.append(ex["l7"].value)
-données.append (dt.datetime.strftime((ex["AJ7"].value), "%d/%m/%Y"))
-données.append (str((ex["S10"].value)).upper()+' '+ (ex["F10"].value))
+données.append(nc["l7"].value)
+données.append (dt.datetime.strftime((nc["AJ7"].value), "%d/%m/%Y"))
+données.append (str((nc["S10"].value)).upper()+' '+ (nc["F10"].value))
 détection=""
-if(ex["AT7"].value)==1 :
+if(nc["AT7"].value)==1 :
     détection="Fournisseur"
-if(ex["AT7"].value)==2 :
+if(nc["AT7"].value)==2 :
     détection="Interne"
-if(ex["AT7"].value)==3 :
+if(nc["AT7"].value)==3 :
     détection="Client"
 données.append(détection)
 données.append("")
-données.append(ex["AN16"].value) 
-données.append(ex["C13"].value)
-données.append(ex["AH13"].value)
+données.append(nc["AN16"].value) 
+données.append(nc["C13"].value)
+données.append(nc["AH13"].value)
 #####section 3 
-données.append(ex["j32"].value) 
-données.append(ex["p32"].value) 
-données.append(ex["v32"].value) 
-données.append(ex["ak32"].value)
+données.append(nc["j32"].value) 
+données.append(nc["p32"].value) 
+données.append(nc["v32"].value) 
+données.append(nc["ak32"].value)
 #####section 4
 solution=""
-if(ex["d38"].value)!="":
+if(nc["d38"].value)!="":
     if solution=="":
         solution+="MFT "
     else:
         solution+="+ MFT "
-if(ex["k40"].value)!="":
+if(nc["k40"].value)!="":
     if solution=="":
         solution+="5 Why "
     else:
         solution+="+ 5 Why "
-if(ex["m50"].value)!="":
+if(nc["m50"].value)!="":
     if solution=="":
         solution+="Ishikawa "
     else:
         solution+="+ Ishikawa "
 données.append(solution)
-données.append(ex["d38"].value+ex["k40"].value+ex["m50"].value)
-données.append(ex["au9"].value)
+données.append(nc["d38"].value+nc["k40"].value+nc["m50"].value)
+données.append(nc["au9"].value)
+#### plan d'action
+plan_action=[]
+num_action=[21,22,23,62,63,64,65,66]
+for i in range (len(num_action)):
+    plan_action.append([nc["B"+str(num_action[i])].value,nom,"",nc["G"+str(num_action[i])].value,"",nc["AF"+str(num_action[i])].value,dt.datetime.strftime((nc["AP"+str(num_action[i])].value), "%d/%m/%Y")])
+for i in range (len(plan_action)):
+    for j in range (len(plan_action[i])):
+        su[colone[j]+str(su_ligne)]=plan_action[i][j]
+    su_ligne+=1
 for i in range (len(all_fnc)):
     if nom == all_fnc[i]:
         mo_ligne=i+3
-
     for i in range(len(données)):
         mo[colone[i]+str(mo_ligne)] = données[i]
+if nom not in all_fnc:
+    ch[colone[1]+str(ch_ligne)] = données[0]
 
-ch[colone[1]+str(ch_ligne)] = données[0]
 monitoring.save('FR 1005-Monitoring NC & Action Plan-V001.xlsx')
-checklist.save('test.xlsm')
+checklist.save('checklist.xlsm')
