@@ -4,9 +4,16 @@ import datetime as dt
 colone = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA",
           "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ"]
 nom=input("FNC?\n")
-feuille = load_workbook(nom+'.xlsx', data_only=True)
+chemin=""
+if nom[7:9]=="01":
+    chemin="Y:/05-Quality/02-Non Conformités/03-Enregistrements_Non Conformités/01-En cours de traitement/01-Provenance fournisseur/"
+if nom[7:9]=="02":
+    chemin="Y:/05-Quality/02-Non Conformités/03-Enregistrements_Non Conformités/01-En cours de traitement/02-Detecté en Interne/"
+if nom[7:9]=="03":
+    chemin="Y:/05-Quality/02-Non Conformités/03-Enregistrements_Non Conformités/01-En cours de traitement/03-Détecté par le client/"
+feuille = load_workbook(chemin+nom+'.xlsx', data_only=True)
 monitoring = load_workbook('FR 1005-Monitoring NC & Action Plan-V001.xlsx')
-checklist = load_workbook('checklist.xlsm', keep_vba=True)
+checklist = load_workbook('Y:/05-Quality/02-Non Conformités/Matrice_Process_NC.xlsm', keep_vba=True)
 mo=monitoring["Suivi_FNC"]
 su=monitoring["Plan_Actions"]
 nc = feuille["Fiche de Non-Conformité"]
@@ -49,16 +56,23 @@ if(nc["d38"].value)!="":
         solution+="MFT "
     else:
         solution+="+ MFT "
+else:
+    solution+=""
+
 if(nc["k40"].value)!="":
     if solution=="":
         solution+="5 Why "
     else:
         solution+="+ 5 Why "
+else:
+    solution+=""
 if(nc["m50"].value)!="":
     if solution=="":
         solution+="Ishikawa "
     else:
         solution+="+ Ishikawa "
+else:
+    solution+=""
 données.append(solution)
 données.append(nc["d38"].value+nc["k40"].value+nc["m50"].value)
 données.append(nc["au9"].value)
@@ -80,4 +94,4 @@ if nom not in all_fnc:
     ch[colone[1]+str(ch_ligne)] = données[0]
 
 monitoring.save('FR 1005-Monitoring NC & Action Plan-V001.xlsx')
-checklist.save('checklist.xlsm')
+checklist.save('Matrice_Process_NC.xlsm')
