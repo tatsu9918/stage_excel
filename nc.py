@@ -5,7 +5,7 @@ colone = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", 
           "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ"]
 nom=input("FNC?\n")
 
-# chemin=""
+chemin=""
 # if nom[7:9]=="01":
 #     chemin="Y:/05-Quality/02-Non Conformités/03-Enregistrements_Non Conformités/01-En cours de traitement/01-Provenance fournisseur/"
 # if nom[7:9]=="02":
@@ -14,16 +14,12 @@ nom=input("FNC?\n")
 #     chemin="Y:/05-Quality/02-Non Conformités/03-Enregistrements_Non Conformités/01-En cours de traitement/03-Détecté par le client/"
 feuille = load_workbook(nom+'.xlsx', data_only=True)
 monitoring = load_workbook('FR 1005-Monitoring NC & Action Plan-V001.xlsx')
-checklist = load_workbook('checklist.xlsm', keep_vba=True)
 mo=monitoring["Suivi_FNC"]
 su=monitoring["Plan_Actions"]
 nc = feuille["Fiche de Non-Conformité"]
-ch=checklist["INT_DATA"]
-ch_ligne=mo_ligne=su_ligne=1
+mo_ligne=su_ligne=1
 all_fnc=[]
 all_pl=[]
-while ch[colone[1]+str(ch_ligne)].data_type == "s":
-    ch_ligne += 1
 while mo[colone[0]+str(mo_ligne)].data_type == "s":
     mo_ligne += 1
 while su[colone[0]+str(su_ligne)].data_type == "s":
@@ -56,15 +52,19 @@ données.append(nc["v32"].value)
 données.append(nc["ak32"].value)
 #####section 4
 solution=""
+cause_racine=""
 if(nc["d38"].value)!="":
+    cause_racine+=nc["d38"].value+'\n'
     if solution=="":
         solution+="MFT "
+        
     else:
         solution+="+ MFT "
 else:
     solution+=""
 
 if(nc["k40"].value)!="":
+    cause_racine+=nc["k40"].value+'\n'
     if solution=="":
         solution+="5 Why "
     else:
@@ -72,6 +72,7 @@ if(nc["k40"].value)!="":
 else:
     solution+=""
 if(nc["m50"].value)!="":
+    cause_racine+=nc["m50"].value+'\n'
     if solution=="":
         solution+="Ishikawa "
     else:
@@ -79,6 +80,7 @@ if(nc["m50"].value)!="":
 else:
     solution+=""
 données.append(solution)
+données.append(cause_racine)
 données.append(nc["d38"].value+nc["k40"].value+nc["m50"].value)
 données.append(nc["au9"].value)
 #### plan d'action
@@ -98,8 +100,5 @@ for i in range (len(all_fnc)):
         mo_ligne=i+3
 for i in range(len(données)):
         mo[colone[i]+str(mo_ligne)] = données[i]
-if nom[:12] not in all_fnc:
-    ch[colone[1]+str(ch_ligne)] = données[0]
 
 monitoring.save('FR 1005-Monitoring NC & Action Plan-V001.xlsx')
-checklist.save('checklist.xlsm')
